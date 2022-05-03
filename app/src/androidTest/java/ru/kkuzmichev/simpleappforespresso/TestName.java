@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -24,6 +25,8 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +37,7 @@ public class TestName {
     @Rule
     public IntentsTestRule intentsTestRule = new IntentsTestRule(MainActivity.class);
 
-    private static Matcher<View> childAtPosition(
+    static Matcher<View> childAtPosition(
             final Matcher<View> parentMatcher, final int position) {
 
         return new TypeSafeMatcher<View>() {
@@ -53,6 +56,16 @@ public class TestName {
         };
     }
 
+    @Before
+    public void registerIdlingResources() {
+        IdlingRegistry.getInstance().register(EspressoIdlingResources.idlingResource);
+    }
+
+    @After
+    public void unregisterIdlingResources() {
+        IdlingRegistry.getInstance().unregister(EspressoIdlingResources.idlingResource);
+    }
+
     @Test
     public void testName() {
         ViewInteraction setting = onView(Matchers.allOf(withContentDescription("More options"), childAtPosition(childAtPosition(withId(R.id.toolbar), 2), 0), isDisplayed()));
@@ -64,8 +77,11 @@ public class TestName {
                 hasData("https://google.com"),
                 hasAction(Intent.ACTION_VIEW)));
     }
+
 }
-/**Ниже код как в лекции, он не сработал. Записал рекордером в тесте.*/
+/**
+ * Ниже код как в лекции, он не сработал. Записал рекордером в тесте.
+ */
 //        ViewInteraction setting = onView(withParent(isAssignableFrom(ActionMenuView.class)));
 //        ViewInteraction settingsItem = onView(allOf(withId(R.id.item_title), withText("Settings")));
 //
