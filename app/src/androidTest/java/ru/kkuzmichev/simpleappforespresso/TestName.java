@@ -3,12 +3,15 @@ package ru.kkuzmichev.simpleappforespresso;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasData;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.CoreMatchers.allOf;
 
+import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -50,7 +53,6 @@ public class TestName {
         };
     }
 
-    //@Rule ... Если вы решли реализовать проверку с использование "Правила"
     @Test
     public void testName() {
         ViewInteraction setting = onView(Matchers.allOf(withContentDescription("More options"), childAtPosition(childAtPosition(withId(R.id.toolbar), 2), 0), isDisplayed()));
@@ -58,23 +60,15 @@ public class TestName {
 
         ViewInteraction settingsItem = onView(Matchers.allOf(withId(androidx.appcompat.R.id.title), withText("Settings"), childAtPosition(childAtPosition(withId(androidx.appcompat.R.id.content), 0), 0), isDisplayed()));
         settingsItem.perform(click());
-        intended(hasData("https://google.com"));
+        intended(allOf(
+                hasData("https://google.com"),
+                hasAction(Intent.ACTION_VIEW)));
     }
 }
-
+/**Ниже код как в лекции, он не сработал. Записал рекордером в тесте.*/
 //        ViewInteraction setting = onView(withParent(isAssignableFrom(ActionMenuView.class)));
 //        ViewInteraction settingsItem = onView(allOf(withId(R.id.item_title), withText("Settings")));
 //
 //        setting.check(matches(isDisplayed()));
 //        setting.perform(click());
 //        settingsItem.check(matches(isDisplayed()));
-
-//        setting.check(
-//                matches(Условия проверки);
-//        //Intents... Если вы решли реализовать проверку с "подписыванием" на Intent
-//        element.perform(Клик); //Для запуска intent
-//        //Проверяем intent, он должен передавать url и action
-//        //Intents..
-
-
-
