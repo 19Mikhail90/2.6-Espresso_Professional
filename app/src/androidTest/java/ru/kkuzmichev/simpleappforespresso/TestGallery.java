@@ -7,6 +7,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 import static ru.kkuzmichev.simpleappforespresso.CustomViewAssertions.isRecyclerView;
 import static ru.kkuzmichev.simpleappforespresso.CustomViewMatcher.recyclerViewSizeMatcher;
@@ -57,18 +59,34 @@ public class TestGallery {
         };
     }
 
+    @Before
+    public void registerIdlingResources() {
+        IdlingRegistry.getInstance().register(EspressoIdlingResources.idlingResource);
+    }
+
+    @After
+    public void unregisterIdlingResources() {
+        IdlingRegistry.getInstance().unregister(EspressoIdlingResources.idlingResource);
+    }
+
 
     @Test
     public void testGallery() {
         ViewInteraction menu = onView(Matchers.allOf(withContentDescription("Open navigation drawer"),
                 childAtPosition(Matchers.allOf(withId(R.id.toolbar), childAtPosition(withClassName(is("com.google.android.material.appbar.AppBarLayout")), 0)), 1),
                 isDisplayed()));
-        menu.perform(click());
 
         ViewInteraction gallery = onView(Matchers.allOf(withId(R.id.nav_gallery),
                 childAtPosition(Matchers.allOf(withId(R.id.design_navigation_view), childAtPosition(withId(R.id.nav_view), 0)), 2),
                 isDisplayed()));
+
+        ViewInteraction galleryItem = onView(allOf(
+                withId(R.id.item_number),
+                withText("5")));
+
+        menu.perform(click());
         gallery.perform(click());
+        galleryItem.check(matches(isDisplayed()));
         recycleList.check(isRecyclerView());
         recycleList.check(matches(recyclerViewSizeMatcher(10)));
     }
